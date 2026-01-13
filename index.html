@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经典智慧闯关 - 书籍RPG游戏</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <!-- 加载界面 -->
+    <div id="loading-screen" class="screen active">
+        <div class="loading-content">
+            <h1 class="game-title">经典智慧闯关</h1>
+            <p class="tagline">以知识为剑，斩破迷惑</p>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p class="loading-text">正在加载...</p>
+        </div>
+    </div>
+
+    <!-- 登录界面 -->
+    <div id="login-screen" class="screen">
+        <div class="login-container">
+            <h1>经典智慧闯关</h1>
+            <div class="login-form">
+                <input type="text" id="nickname-input" placeholder="输入你的名号" maxlength="12">
+                <button id="start-btn" class="btn btn-primary">开启修行之路</button>
+            </div>
+            <div class="login-tips">
+                <p>进度将保存在本地</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主菜单界面 -->
+    <div id="main-menu" class="screen">
+        <header class="game-header">
+            <div class="player-info">
+                <div class="avatar-container">
+                    <div id="player-avatar" class="avatar"></div>
+                    <span id="player-title" class="title-badge">初学者</span>
+                </div>
+                <div class="player-stats">
+                    <h3 id="player-name">玩家</h3>
+                    <div class="level-info">
+                        <span id="player-level">Lv.1</span>
+                        <div class="exp-bar">
+                            <div id="exp-progress" class="exp-fill"></div>
+                        </div>
+                        <span id="exp-text">0/100</span>
+                    </div>
+                </div>
+            </div>
+            <div class="currency-display">
+                <span class="wisdom-points"><i class="icon-wisdom"></i><span id="wisdom-count">0</span></span>
+                <span class="gold-coins"><i class="icon-gold"></i><span id="gold-count">0</span></span>
+            </div>
+        </header>
+
+        <main class="menu-content">
+            <h2 class="section-title">选择典籍</h2>
+            <div class="book-selection">
+                <div class="book-card" data-book="chuanxilu">
+                    <div class="book-cover chuanxilu">
+                        <div class="book-glow"></div>
+                    </div>
+                    <div class="book-info">
+                        <h3>传习录</h3>
+                        <p>心学修炼之路</p>
+                        <div class="book-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-progress="0"></div>
+                            </div>
+                            <span class="progress-text">0/10关</span>
+                        </div>
+                    </div>
+                    <div class="book-character">
+                        <span>王阳明</span>
+                    </div>
+                </div>
+
+                <div class="book-card" data-book="maoxuan">
+                    <div class="book-cover maoxuan">
+                        <div class="book-glow"></div>
+                    </div>
+                    <div class="book-info">
+                        <h3>毛泽东选集</h3>
+                        <p>革命解放之路</p>
+                        <div class="book-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-progress="0"></div>
+                            </div>
+                            <span class="progress-text">0/10关</span>
+                        </div>
+                    </div>
+                    <div class="book-character">
+                        <span>革命战士</span>
+                    </div>
+                </div>
+
+                <div class="book-card" data-book="zizhitongjian">
+                    <div class="book-cover zizhitongjian">
+                        <div class="book-glow"></div>
+                    </div>
+                    <div class="book-info">
+                        <h3>资治通鉴</h3>
+                        <p>历史智慧之路</p>
+                        <div class="book-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-progress="0"></div>
+                            </div>
+                            <span class="progress-text">0/10关</span>
+                        </div>
+                    </div>
+                    <div class="book-character">
+                        <span>历史谋士</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-actions">
+                <button class="action-btn daily-challenge" id="daily-btn">
+                    <span class="btn-icon">🔥</span>
+                    <span class="btn-text">每日挑战</span>
+                    <span class="btn-badge" id="daily-badge">!</span>
+                </button>
+                <button class="action-btn achievements" id="achievement-btn">
+                    <span class="btn-icon">🏆</span>
+                    <span class="btn-text">成就</span>
+                </button>
+                <button class="action-btn inventory" id="inventory-btn">
+                    <span class="btn-icon">📦</span>
+                    <span class="btn-text">背包</span>
+                </button>
+                <button class="action-btn leaderboard" id="leaderboard-btn">
+                    <span class="btn-icon">📊</span>
+                    <span class="btn-text">排行榜</span>
+                </button>
+            </div>
+        </main>
+
+        <!-- 每日签到提示 -->
+        <div id="daily-login-popup" class="popup hidden">
+            <div class="popup-content">
+                <h3>每日签到</h3>
+                <div class="streak-display">
+                    <span>连续签到</span>
+                    <span id="streak-days" class="streak-number">0</span>
+                    <span>天</span>
+                </div>
+                <div class="daily-reward">
+                    <p>今日奖励</p>
+                    <div class="reward-items" id="daily-reward-items"></div>
+                </div>
+                <button class="btn btn-primary" id="claim-daily-btn">领取奖励</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 关卡选择界面 -->
+    <div id="level-select" class="screen">
+        <header class="level-header">
+            <button class="back-btn" id="back-to-menu">← 返回</button>
+            <h2 id="current-book-title">传习录</h2>
+            <div class="book-stats">
+                <span id="book-progress-text">进度: 0/10</span>
+            </div>
+        </header>
+
+        <div class="level-map" id="level-map">
+            <!-- 关卡节点将由JS动态生成 -->
+        </div>
+
+        <div class="character-preview">
+            <div id="preview-avatar" class="character-avatar"></div>
+            <div class="character-stats">
+                <h3 id="preview-name">王阳明</h3>
+                <div class="stat-row">
+                    <span>生命值</span>
+                    <span id="preview-hp">100</span>
+                </div>
+                <div class="stat-row">
+                    <span>战斗力</span>
+                    <span id="preview-attack">10</span>
+                </div>
+                <div class="stat-row">
+                    <span>智慧</span>
+                    <span id="preview-wisdom">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 战斗界面 -->
+    <div id="battle-screen" class="screen">
+        <header class="battle-header">
+            <div class="stage-info">
+                <span id="stage-name">第一关</span>
+                <span id="stage-subtitle">初入心学</span>
+            </div>
+        </header>
+
+        <div class="battle-arena">
+            <div class="combatant player-side">
+                <div class="combatant-info">
+                    <h4 id="battle-player-name">王阳明</h4>
+                    <div class="hp-bar">
+                        <div id="player-hp-fill" class="hp-fill"></div>
+                        <span id="player-hp-text">100/100</span>
+                    </div>
+                </div>
+                <div id="player-sprite" class="sprite player-sprite">
+                    <div class="damage-number" id="player-damage"></div>
+                </div>
+            </div>
+
+            <div class="vs-indicator">VS</div>
+
+            <div class="combatant enemy-side">
+                <div id="enemy-sprite" class="sprite enemy-sprite">
+                    <div class="damage-number" id="enemy-damage"></div>
+                </div>
+                <div class="combatant-info">
+                    <h4 id="battle-enemy-name">私欲小怪</h4>
+                    <div class="hp-bar enemy-hp">
+                        <div id="enemy-hp-fill" class="hp-fill"></div>
+                        <span id="enemy-hp-text">50/50</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-panel">
+            <div class="question-header">
+                <span class="attack-icon">⚔️</span>
+                <span>知识攻击</span>
+                <div class="timer">
+                    <div id="timer-bar" class="timer-fill"></div>
+                </div>
+            </div>
+            <p id="question-text" class="question-text">问题加载中...</p>
+            <div id="answer-options" class="answer-options">
+                <!-- 选项由JS动态生成 -->
+            </div>
+        </div>
+
+        <div class="battle-skills">
+            <h4>技能</h4>
+            <div id="skill-buttons" class="skill-list">
+                <!-- 技能由JS动态生成 -->
+            </div>
+        </div>
+
+        <div class="combo-display hidden" id="combo-display">
+            <span class="combo-count" id="combo-count">2</span>
+            <span class="combo-text">连击!</span>
+        </div>
+    </div>
+
+    <!-- 战斗结果界面 -->
+    <div id="result-screen" class="screen">
+        <div class="result-container">
+            <h2 id="result-title" class="result-title">胜利!</h2>
+            <div class="result-character" id="result-character"></div>
+
+            <div class="rewards-panel">
+                <h3>战斗奖励</h3>
+                <div class="reward-list" id="reward-list">
+                    <!-- 奖励由JS动态生成 -->
+                </div>
+            </div>
+
+            <div class="exp-gain-display">
+                <p>经验值 +<span id="exp-gained">0</span></p>
+                <div class="level-up-notice hidden" id="level-up-notice">
+                    <span>等级提升!</span>
+                    <span id="new-level">Lv.2</span>
+                </div>
+            </div>
+
+            <div class="drop-items hidden" id="drop-items">
+                <h3>掉落物品</h3>
+                <div class="drop-list" id="drop-list"></div>
+            </div>
+
+            <div class="result-actions">
+                <button class="btn btn-secondary" id="back-to-levels">返回关卡</button>
+                <button class="btn btn-primary" id="next-level">下一关</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成就界面 -->
+    <div id="achievement-screen" class="screen">
+        <header class="screen-header">
+            <button class="back-btn" id="back-from-achievement">← 返回</button>
+            <h2>成就殿堂</h2>
+        </header>
+        <div class="achievement-grid" id="achievement-grid">
+            <!-- 成就由JS动态生成 -->
+        </div>
+    </div>
+
+    <!-- 背包界面 -->
+    <div id="inventory-screen" class="screen">
+        <header class="screen-header">
+            <button class="back-btn" id="back-from-inventory">← 返回</button>
+            <h2>背包</h2>
+        </header>
+        <div class="inventory-tabs">
+            <button class="tab-btn active" data-tab="equipment">装备</button>
+            <button class="tab-btn" data-tab="items">道具</button>
+        </div>
+        <div class="inventory-content">
+            <div class="equipment-panel" id="equipment-panel">
+                <div class="equipped-slots">
+                    <div class="equip-slot" data-slot="weapon">
+                        <span class="slot-label">武器</span>
+                        <div class="slot-item" id="equipped-weapon"></div>
+                    </div>
+                    <div class="equip-slot" data-slot="armor">
+                        <span class="slot-label">护甲</span>
+                        <div class="slot-item" id="equipped-armor"></div>
+                    </div>
+                    <div class="equip-slot" data-slot="accessory">
+                        <span class="slot-label">饰品</span>
+                        <div class="slot-item" id="equipped-accessory"></div>
+                    </div>
+                </div>
+                <div class="inventory-grid" id="inventory-grid">
+                    <!-- 物品由JS动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 排行榜界面 -->
+    <div id="leaderboard-screen" class="screen">
+        <header class="screen-header">
+            <button class="back-btn" id="back-from-leaderboard">← 返回</button>
+            <h2>智者排行</h2>
+        </header>
+        <div class="leaderboard-tabs">
+            <button class="tab-btn active" data-tab="level">等级榜</button>
+            <button class="tab-btn" data-tab="wisdom">智慧榜</button>
+        </div>
+        <div class="leaderboard-list" id="leaderboard-list">
+            <!-- 排行由JS动态生成 -->
+        </div>
+    </div>
+
+    <!-- 全局通知 -->
+    <div id="notification" class="notification hidden">
+        <span class="notification-icon"></span>
+        <span class="notification-text"></span>
+    </div>
+
+    <!-- 音效 -->
+    <audio id="sfx-correct" preload="auto"></audio>
+    <audio id="sfx-wrong" preload="auto"></audio>
+    <audio id="sfx-levelup" preload="auto"></audio>
+    <audio id="sfx-victory" preload="auto"></audio>
+    <audio id="sfx-click" preload="auto"></audio>
+
+    <script src="js/data/books.js"></script>
+    <script src="js/data/questions.js"></script>
+    <script src="js/data/enemies.js"></script>
+    <script src="js/data/achievements.js"></script>
+    <script src="js/data/items.js"></script>
+    <script src="js/utils/storage.js"></script>
+    <script src="js/game/Character.js"></script>
+    <script src="js/game/Battle.js"></script>
+    <script src="js/game/Reward.js"></script>
+    <script src="js/game/GameEngine.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

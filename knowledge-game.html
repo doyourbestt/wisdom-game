@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识闯关游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 头部样式 */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            border-radius: 20px;
+            height: 20px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00f260, #0575e6);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            font-size: 1.1rem;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        /* 关卡选择界面 */
+        .level-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .level-btn {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .level-btn:hover:not(.locked) {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .level-btn.locked {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .level-btn.completed {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+
+        .level-btn .level-num {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .level-btn .stars {
+            color: #ffd700;
+            margin-top: 5px;
+        }
+
+        .level-btn.locked .stars {
+            color: #999;
+        }
+
+        /* 游戏区域 */
+        .game-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .game-area.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .question-type {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .question-number {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        /* 选择题样式 */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .option.correct {
+            border-color: #38ef7d;
+            background: #38ef7d;
+            color: white;
+        }
+
+        .option.wrong {
+            border-color: #ff6b6b;
+            background: #ff6b6b;
+            color: white;
+        }
+
+        /* 填空题样式 */
+        .fill-blank-area {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            line-height: 2;
+        }
+
+        .blank-input {
+            border: none;
+            border-bottom: 2px solid #667eea;
+            padding: 5px 10px;
+            font-size: 1.1rem;
+            width: 120px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .blank-input:focus {
+            border-bottom-color: #764ba2;
+        }
+
+        .blank-input.correct {
+            border-bottom-color: #38ef7d;
+            background: #e8fff0;
+        }
+
+        .blank-input.wrong {
+            border-bottom-color: #ff6b6b;
+            background: #ffe8e8;
+        }
+
+        /* 拖拽匹配样式 */
+        .drag-area {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .drag-column {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .drag-column h3 {
+            text-align: center;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .drag-item {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .drag-item:active {
+            cursor: grabbing;
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+            transform: scale(1.05);
+        }
+
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 60px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .drop-zone .drag-item {
+            margin: 0;
+        }
+
+        .drop-zone.correct {
+            border-color: #38ef7d;
+            background: #e8fff0;
+        }
+
+        .drop-zone.wrong {
+            border-color: #ff6b6b;
+            background: #ffe8e8;
+        }
+
+        .drop-label {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        /* 按钮样式 */
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        /* 结果弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            animation: bounceIn 0.5s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-content h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal-content .big-stars {
+            font-size: 3rem;
+            margin: 20px 0;
+        }
+
+        .modal-content .score {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* 知识点配置区域 */
+        .config-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .config-area h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .config-area textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+
+        .config-area textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .config-hint {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        /* 反馈提示 */
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .feedback.correct {
+            background: #e8fff0;
+            color: #0a7c42;
+            border: 1px solid #38ef7d;
+        }
+
+        .feedback.wrong {
+            background: #ffe8e8;
+            color: #c41e3a;
+            border: 1px solid #ff6b6b;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .drag-area {
+                flex-direction: column;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>🎮 知识闯关游戏</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="stats">
+                <div class="stat-item">⭐ 总星数: <span id="totalStars">0</span></div>
+                <div class="stat-item">🏆 已完成: <span id="completedLevels">0</span>/<span id="totalLevels">0</span></div>
+            </div>
+        </div>
+
+        <!-- 知识点配置区域 -->
+        <div class="config-area" id="configArea">
+            <h2>📚 配置知识点</h2>
+            <textarea id="configInput" placeholder="在这里输入JSON格式的题目配置..."></textarea>
+            <p class="config-hint">提示：修改下方的示例配置，或直接点击"开始游戏"使用默认题目</p>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="loadConfig()">开始游戏</button>
+                <button class="btn btn-secondary" onclick="loadExample()">加载示例</button>
+            </div>
+        </div>
+
+        <!-- 关卡选择 -->
+        <div id="levelSelectArea" style="display: none;">
+            <div class="config-area">
+                <h2>🗺️ 选择关卡</h2>
+                <div class="level-select" id="levelSelect"></div>
+                <div class="btn-group" style="margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="showConfig()">返回配置</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏区域 -->
+        <div class="game-area" id="gameArea">
+            <div class="question-header">
+                <span class="question-type" id="questionType">选择题</span>
+                <span class="question-number" id="questionNumber">第 1 题 / 共 3 题</span>
+            </div>
+            <div class="question-text" id="questionText"></div>
+            <div id="questionContent"></div>
+            <div class="feedback" id="feedback"></div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="backToLevels()">返回关卡</button>
+                <button class="btn btn-primary" id="submitBtn" onclick="checkAnswer()">确认答案</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" style="display: none;">下一题</button>
+            </div>
+        </div>
+
+        <!-- 结果弹窗 -->
+        <div class="modal" id="resultModal">
+            <div class="modal-content">
+                <h2 id="resultTitle">恭喜过关！</h2>
+                <div class="big-stars" id="resultStars">⭐⭐⭐</div>
+                <div class="score" id="resultScore">得分: 100%</div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="backToLevels()">返回关卡</button>
+                    <button class="btn btn-primary" onclick="nextLevel()">下一关</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 示例题目配置
+        const exampleConfig = {
+            title: "数学基础知识",
+            levels: [
+                {
+                    name: "四则运算",
+                    questions: [
+                        {
+                            type: "choice",
+                            question: "25 + 37 = ?",
+                            options: ["52", "62", "72", "82"],
+                            answer: 1,
+                            explanation: "25 + 37 = 62"
+                        },
+                        {
+                            type: "fill",
+                            question: "完成下列算式：48 ÷ ___ = 6",
+                            blanks: ["8"],
+                            explanation: "48 ÷ 8 = 6"
+                        },
+                        {
+                            type: "choice",
+                            question: "下列哪个算式的结果最大？",
+                            options: ["12 × 3", "50 - 15", "8 × 5", "100 ÷ 4"],
+                            answer: 2,
+                            explanation: "12×3=36, 50-15=35, 8×5=40, 100÷4=25，所以8×5最大"
+                        }
+                    ]
+                },
+                {
+                    name: "分数入门",
+                    questions: [
+                        {
+                            type: "choice",
+                            question: "1/2 + 1/4 = ?",
+                            options: ["1/6", "2/6", "3/4", "2/4"],
+                            answer: 2,
+                            explanation: "1/2 = 2/4，所以 2/4 + 1/4 = 3/4"
+                        },
+                        {
+                            type: "drag",
+                            question: "将分数与对应的小数配对",
+                            items: ["1/2", "1/4", "3/4"],
+                            targets: ["0.5", "0.25", "0.75"],
+                            matches: [0, 1, 2],
+                            explanation: "1/2=0.5, 1/4=0.25, 3/4=0.75"
+                        },
+                        {
+                            type: "fill",
+                            question: "3/5 用小数表示是 ___",
+                            blanks: ["0.6"],
+                            explanation: "3 ÷ 5 = 0.6"
+                        }
+                    ]
+                },
+                {
+                    name: "几何图形",
+                    questions: [
+                        {
+                            type: "choice",
+                            question: "正方形有几条边？",
+                            options: ["3条", "4条", "5条", "6条"],
+                            answer: 1,
+                            explanation: "正方形是四边形，有4条边"
+                        },
+                        {
+                            type: "drag",
+                            question: "将图形名称与边数配对",
+                            items: ["三角形", "五边形", "六边形"],
+                            targets: ["3条边", "5条边", "6条边"],
+                            matches: [0, 1, 2],
+                            explanation: "三角形3边，五边形5边，六边形6边"
+                        },
+                        {
+                            type: "fill",
+                            question: "圆的周长公式是 C = 2π___",
+                            blanks: ["r"],
+                            explanation: "圆的周长 C = 2πr，其中r是半径"
+                        }
+                    ]
+                },
+                {
+                    name: "综合挑战",
+                    questions: [
+                        {
+                            type: "choice",
+                            question: "如果 x + 5 = 12，那么 x = ?",
+                            options: ["5", "6", "7", "8"],
+                            answer: 2,
+                            explanation: "x = 12 - 5 = 7"
+                        },
+                        {
+                            type: "fill",
+                            question: "长方形的面积公式是：面积 = 长 × ___",
+                            blanks: ["宽"],
+                            explanation: "长方形面积 = 长 × 宽"
+                        },
+                        {
+                            type: "drag",
+                            question: "将数学符号与含义配对",
+                            items: ["+", "−", "×", "÷"],
+                            targets: ["加法", "减法", "乘法", "除法"],
+                            matches: [0, 1, 2, 3],
+                            explanation: "+加法，−减法，×乘法，÷除法"
+                        },
+                        {
+                            type: "choice",
+                            question: "100的平方根是多少？",
+                            options: ["5", "10", "20", "50"],
+                            answer: 1,
+                            explanation: "√100 = 10，因为10 × 10 = 100"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // 游戏状态
+        let gameData = null;
+        let currentLevel = 0;
+        let currentQuestion = 0;
+        let score = 0;
+        let levelProgress = [];
+        let selectedAnswer = null;
+        let dragMatches = {};
+
+        // 初始化
+        function init() {
+            document.getElementById('configInput').value = JSON.stringify(exampleConfig, null, 2);
+            loadProgress();
+        }
+
+        // 加载示例配置
+        function loadExample() {
+            document.getElementById('configInput').value = JSON.stringify(exampleConfig, null, 2);
+        }
+
+        // 加载配置并开始游戏
+        function loadConfig() {
+            try {
+                const configText = document.getElementById('configInput').value;
+                gameData = JSON.parse(configText);
+
+                if (!gameData.levels || gameData.levels.length === 0) {
+                    alert('配置错误：至少需要一个关卡');
+                    return;
+                }
+
+                // 初始化进度
+                if (levelProgress.length !== gameData.levels.length) {
+                    levelProgress = gameData.levels.map(() => ({ completed: false, stars: 0 }));
+                }
+
+                document.getElementById('configArea').style.display = 'none';
+                document.getElementById('levelSelectArea').style.display = 'block';
+                renderLevelSelect();
+                updateStats();
+            } catch (e) {
+                alert('JSON格式错误，请检查配置：' + e.message);
+            }
+        }
+
+        // 显示配置页面
+        function showConfig() {
+            document.getElementById('configArea').style.display = 'block';
+            document.getElementById('levelSelectArea').style.display = 'none';
+            document.getElementById('gameArea').classList.remove('active');
+        }
+
+        // 渲染关卡选择
+        function renderLevelSelect() {
+            const container = document.getElementById('levelSelect');
+            container.innerHTML = '';
+
+            gameData.levels.forEach((level, index) => {
+                const isLocked = index > 0 && !levelProgress[index - 1].completed;
+                const isCompleted = levelProgress[index].completed;
+                const stars = levelProgress[index].stars;
+
+                const btn = document.createElement('button');
+                btn.className = `level-btn ${isLocked ? 'locked' : ''} ${isCompleted ? 'completed' : ''}`;
+                btn.innerHTML = `
+                    <div class="level-num">第${index + 1}关</div>
+                    <div style="font-size: 0.9rem; margin: 5px 0;">${level.name}</div>
+                    <div class="stars">${isLocked ? '🔒' : '⭐'.repeat(stars) + '☆'.repeat(3 - stars)}</div>
+                `;
+
+                if (!isLocked) {
+                    btn.onclick = () => startLevel(index);
+                }
+
+                container.appendChild(btn);
+            });
+
+            document.getElementById('totalLevels').textContent = gameData.levels.length;
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            const totalStars = levelProgress.reduce((sum, l) => sum + l.stars, 0);
+            const completed = levelProgress.filter(l => l.completed).length;
+            const progress = (completed / gameData.levels.length) * 100;
+
+            document.getElementById('totalStars').textContent = totalStars;
+            document.getElementById('completedLevels').textContent = completed;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // 开始关卡
+        function startLevel(levelIndex) {
+            currentLevel = levelIndex;
+            currentQuestion = 0;
+            score = 0;
+
+            document.getElementById('levelSelectArea').style.display = 'none';
+            document.getElementById('gameArea').classList.add('active');
+
+            renderQuestion();
+        }
+
+        // 渲染题目
+        function renderQuestion() {
+            const level = gameData.levels[currentLevel];
+            const question = level.questions[currentQuestion];
+
+            document.getElementById('questionNumber').textContent =
+                `第 ${currentQuestion + 1} 题 / 共 ${level.questions.length} 题`;
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'inline-block';
+            document.getElementById('nextBtn').style.display = 'none';
+
+            selectedAnswer = null;
+            dragMatches = {};
+
+            const contentDiv = document.getElementById('questionContent');
+
+            switch (question.type) {
+                case 'choice':
+                    document.getElementById('questionType').textContent = '选择题';
+                    renderChoiceQuestion(question, contentDiv);
+                    break;
+                case 'fill':
+                    document.getElementById('questionType').textContent = '填空题';
+                    renderFillQuestion(question, contentDiv);
+                    break;
+                case 'drag':
+                    document.getElementById('questionType').textContent = '拖拽匹配';
+                    renderDragQuestion(question, contentDiv);
+                    break;
+            }
+        }
+
+        // 渲染选择题
+        function renderChoiceQuestion(question, container) {
+            container.innerHTML = `
+                <div class="options">
+                    ${question.options.map((opt, i) => `
+                        <div class="option" data-index="${i}" onclick="selectOption(this, ${i})">
+                            ${String.fromCharCode(65 + i)}. ${opt}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // 选择选项
+        function selectOption(element, index) {
+            if (document.getElementById('submitBtn').style.display === 'none') return;
+
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedAnswer = index;
+        }
+
+        // 渲染填空题
+        function renderFillQuestion(question, container) {
+            const parts = question.question.split('___');
+            let html = '<div class="fill-blank-area">';
+
+            parts.forEach((part, i) => {
+                html += `<span>${part}</span>`;
+                if (i < parts.length - 1) {
+                    html += `<input type="text" class="blank-input" data-index="${i}">`;
+                }
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // 渲染拖拽题
+        function renderDragQuestion(question, container) {
+            const shuffledItems = [...question.items].sort(() => Math.random() - 0.5);
+
+            container.innerHTML = `
+                <div class="drag-area">
+                    <div class="drag-column">
+                        <h3>拖动项目</h3>
+                        <div id="dragItems">
+                            ${shuffledItems.map((item, i) => `
+                                <div class="drag-item" draggable="true" data-value="${item}">${item}</div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="drag-column">
+                        <h3>放置区域</h3>
+                        ${question.targets.map((target, i) => `
+                            <div class="drop-zone" data-target="${target}" data-index="${i}">
+                                <span class="drop-label">${target}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            // 设置拖拽事件
+            setupDragAndDrop();
+        }
+
+        // 设置拖拽功能
+        function setupDragAndDrop() {
+            const dragItems = document.querySelectorAll('.drag-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            dragItems.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', item.dataset.value);
+                    item.classList.add('dragging');
+                });
+
+                item.addEventListener('dragend', () => {
+                    item.classList.remove('dragging');
+                });
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('drag-over');
+                });
+
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+
+                    const value = e.dataTransfer.getData('text/plain');
+                    const dragItem = document.querySelector(`.drag-item[data-value="${value}"]`);
+
+                    // 如果区域已有内容，先移回
+                    if (zone.querySelector('.drag-item')) {
+                        const existingItem = zone.querySelector('.drag-item');
+                        document.getElementById('dragItems').appendChild(existingItem);
+                        delete dragMatches[zone.dataset.index];
+                    }
+
+                    // 放入新内容
+                    zone.innerHTML = '';
+                    zone.appendChild(dragItem);
+                    dragMatches[zone.dataset.index] = value;
+                });
+            });
+        }
+
+        // 检查答案
+        function checkAnswer() {
+            const question = gameData.levels[currentLevel].questions[currentQuestion];
+            let isCorrect = false;
+
+            switch (question.type) {
+                case 'choice':
+                    isCorrect = selectedAnswer === question.answer;
+                    showChoiceResult(question.answer, isCorrect);
+                    break;
+                case 'fill':
+                    const inputs = document.querySelectorAll('.blank-input');
+                    const answers = Array.from(inputs).map(input => input.value.trim().toLowerCase());
+                    isCorrect = question.blanks.every((blank, i) =>
+                        answers[i] === blank.toLowerCase()
+                    );
+                    showFillResult(question.blanks, isCorrect);
+                    break;
+                case 'drag':
+                    isCorrect = question.items.every((item, i) =>
+                        dragMatches[question.matches[i]] === item
+                    );
+                    showDragResult(question, isCorrect);
+                    break;
+            }
+
+            if (isCorrect) score++;
+
+            // 显示反馈
+            const feedback = document.getElementById('feedback');
+            feedback.className = `feedback show ${isCorrect ? 'correct' : 'wrong'}`;
+            feedback.innerHTML = isCorrect
+                ? `✅ 正确！${question.explanation ? '<br>' + question.explanation : ''}`
+                : `❌ 错误！${question.explanation ? '<br>正确答案：' + question.explanation : ''}`;
+
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        }
+
+        // 显示选择题结果
+        function showChoiceResult(correctIndex, isCorrect) {
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                if (i === correctIndex) {
+                    opt.classList.add('correct');
+                } else if (i === selectedAnswer && !isCorrect) {
+                    opt.classList.add('wrong');
+                }
+            });
+        }
+
+        // 显示填空题结果
+        function showFillResult(blanks, isCorrect) {
+            document.querySelectorAll('.blank-input').forEach((input, i) => {
+                if (input.value.trim().toLowerCase() === blanks[i].toLowerCase()) {
+                    input.classList.add('correct');
+                } else {
+                    input.classList.add('wrong');
+                    input.value = blanks[i];
+                }
+            });
+        }
+
+        // 显示拖拽题结果
+        function showDragResult(question, isCorrect) {
+            document.querySelectorAll('.drop-zone').forEach((zone, i) => {
+                const expectedItem = question.items[question.matches.indexOf(i)];
+                if (dragMatches[i] === expectedItem) {
+                    zone.classList.add('correct');
+                } else {
+                    zone.classList.add('wrong');
+                }
+            });
+        }
+
+        // 下一题
+        function nextQuestion() {
+            const level = gameData.levels[currentLevel];
+
+            if (currentQuestion < level.questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        // 显示结果
+        function showResult() {
+            const level = gameData.levels[currentLevel];
+            const percentage = (score / level.questions.length) * 100;
+
+            let stars = 0;
+            if (percentage >= 60) stars = 1;
+            if (percentage >= 80) stars = 2;
+            if (percentage === 100) stars = 3;
+
+            // 更新进度
+            if (stars > levelProgress[currentLevel].stars) {
+                levelProgress[currentLevel].stars = stars;
+            }
+            if (percentage >= 60) {
+                levelProgress[currentLevel].completed = true;
+            }
+            saveProgress();
+
+            // 显示弹窗
+            document.getElementById('resultTitle').textContent =
+                percentage >= 60 ? '🎉 恭喜过关！' : '😢 再接再厉！';
+            document.getElementById('resultStars').textContent =
+                '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+            document.getElementById('resultScore').textContent =
+                `得分: ${score}/${level.questions.length} (${percentage.toFixed(0)}%)`;
+            document.getElementById('resultModal').classList.add('active');
+        }
+
+        // 返回关卡选择
+        function backToLevels() {
+            document.getElementById('resultModal').classList.remove('active');
+            document.getElementById('gameArea').classList.remove('active');
+            document.getElementById('levelSelectArea').style.display = 'block';
+            renderLevelSelect();
+            updateStats();
+        }
+
+        // 下一关
+        function nextLevel() {
+            document.getElementById('resultModal').classList.remove('active');
+
+            if (currentLevel < gameData.levels.length - 1) {
+                startLevel(currentLevel + 1);
+            } else {
+                backToLevels();
+                alert('🎊 恭喜你完成了所有关卡！');
+            }
+        }
+
+        // 保存进度
+        function saveProgress() {
+            localStorage.setItem('knowledgeGameProgress', JSON.stringify(levelProgress));
+        }
+
+        // 加载进度
+        function loadProgress() {
+            const saved = localStorage.getItem('knowledgeGameProgress');
+            if (saved) {
+                levelProgress = JSON.parse(saved);
+            }
+        }
+
+        // 页面加载完成后初始化
+        window.onload = init;
+    </script>
+</body>
+</html>

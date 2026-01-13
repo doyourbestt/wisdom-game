@@ -1,0 +1,6 @@
+# 临时文件
+nul
+tmpclaude-*
+
+# Claude 配置
+.claude/

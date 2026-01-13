@@ -1,0 +1,604 @@
+/* ==========================================
+   动画效果样式表
+   ========================================== */
+
+/* 基础动画 */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 脉冲效果 */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+@keyframes levelPulse {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(212, 165, 116, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(212, 165, 116, 0.8);
+    }
+}
+
+/* 抖动效果 - 受击 */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes shakeHard {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-10px) rotate(-2deg); }
+    20%, 40%, 60%, 80% { transform: translateX(10px) rotate(2deg); }
+}
+
+/* 攻击动画 */
+@keyframes attackRight {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(30px); }
+}
+
+@keyframes attackLeft {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-30px); }
+}
+
+/* 伤害数字飘动 */
+@keyframes damageFloat {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-30px) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-60px) scale(0.8);
+    }
+}
+
+@keyframes criticalDamage {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    25% {
+        transform: translateY(-20px) scale(1.5);
+    }
+    50% {
+        transform: translateY(-40px) scale(1.3);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-80px) scale(0.8);
+    }
+}
+
+/* 经验值飘字 */
+@keyframes expFloat {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+}
+
+/* 升级特效 */
+@keyframes levelUp {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.2);
+        filter: brightness(1.5);
+    }
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+
+@keyframes levelUpGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 60px rgba(251, 191, 36, 1), 0 0 100px rgba(251, 191, 36, 0.5);
+    }
+}
+
+/* 胜利动画 */
+@keyframes victoryBounce {
+    0%, 100% { transform: translateY(0); }
+    25% { transform: translateY(-20px); }
+    50% { transform: translateY(0); }
+    75% { transform: translateY(-10px); }
+}
+
+@keyframes victoryGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 30px rgba(74, 222, 128, 1));
+    }
+}
+
+/* 失败动画 */
+@keyframes defeatFade {
+    0% {
+        filter: grayscale(0) brightness(1);
+    }
+    100% {
+        filter: grayscale(1) brightness(0.5);
+    }
+}
+
+/* 物品掉落 */
+@keyframes dropItem {
+    0% {
+        opacity: 0;
+        transform: translateY(-50px) rotate(-180deg);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(10px) rotate(10deg);
+    }
+    80% {
+        transform: translateY(-5px) rotate(-5deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) rotate(0);
+    }
+}
+
+/* 稀有物品闪光 */
+@keyframes legendaryShine {
+    0%, 100% {
+        background-position: -200% center;
+    }
+    50% {
+        background-position: 200% center;
+    }
+}
+
+/* 连击效果 */
+@keyframes comboPopup {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes comboNumber {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.3);
+    }
+}
+
+/* 按钮点击效果 */
+@keyframes buttonPress {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+}
+
+/* 加载动画 */
+@keyframes loadingPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+@keyframes loadingBar {
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
+}
+
+/* 星星闪烁 */
+@keyframes starTwinkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* 成就解锁 */
+@keyframes achievementUnlock {
+    0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2) rotate(10deg);
+    }
+    100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+    }
+}
+
+/* 每日签到动画 */
+@keyframes streakFire {
+    0%, 100% {
+        text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(251, 191, 36, 1), 0 0 30px rgba(248, 113, 113, 0.5);
+    }
+}
+
+/* 技能使用特效 */
+@keyframes skillActivate {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(96, 165, 250, 0);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(96, 165, 250, 0.8);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(96, 165, 250, 0);
+    }
+}
+
+/* 书籍悬浮效果 */
+@keyframes bookFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* 计时器紧迫感 */
+@keyframes timerUrgent {
+    0%, 100% { background-color: var(--warning); }
+    50% { background-color: var(--danger); }
+}
+
+/* ==========================================
+   动画应用类
+   ========================================== */
+
+/* 基础动画类 */
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.animate-fadeOut {
+    animation: fadeOut 0.3s ease forwards;
+}
+
+.animate-slideUp {
+    animation: slideUp 0.3s ease forwards;
+}
+
+.animate-slideDown {
+    animation: slideDown 0.3s ease forwards;
+}
+
+/* 战斗动画类 */
+.animate-attack-right {
+    animation: attackRight 0.3s ease;
+}
+
+.animate-attack-left {
+    animation: attackLeft 0.3s ease;
+}
+
+.animate-shake {
+    animation: shake 0.4s ease;
+}
+
+.animate-shake-hard {
+    animation: shakeHard 0.5s ease;
+}
+
+/* 伤害显示 */
+.damage-show {
+    animation: damageFloat 1s ease forwards;
+    color: var(--danger);
+}
+
+.damage-show.critical {
+    animation: criticalDamage 1.2s ease forwards;
+    color: var(--warning);
+    font-size: 2rem !important;
+}
+
+.damage-show.heal {
+    animation: damageFloat 1s ease forwards;
+    color: var(--success);
+}
+
+/* 经验值显示 */
+.exp-show {
+    position: fixed;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--warning);
+    pointer-events: none;
+    animation: expFloat 1.5s ease forwards;
+    z-index: 100;
+}
+
+/* 升级效果 */
+.animate-levelUp {
+    animation: levelUp 0.8s ease, levelUpGlow 0.8s ease;
+}
+
+/* 胜利效果 */
+.animate-victory {
+    animation: victoryBounce 1s ease infinite, victoryGlow 2s ease infinite;
+}
+
+/* 失败效果 */
+.animate-defeat {
+    animation: defeatFade 1s ease forwards;
+}
+
+/* 物品掉落 */
+.animate-drop {
+    animation: dropItem 0.6s ease forwards;
+}
+
+/* 传奇物品闪光 */
+.legendary-shine {
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: legendaryShine 3s ease infinite;
+}
+
+/* 连击动画 */
+.animate-combo {
+    animation: comboPopup 0.5s ease forwards;
+}
+
+.animate-combo-number {
+    animation: comboNumber 0.3s ease;
+}
+
+/* 成就解锁 */
+.animate-achievement {
+    animation: achievementUnlock 0.6s ease forwards;
+}
+
+/* 技能激活 */
+.animate-skill {
+    animation: skillActivate 0.5s ease;
+}
+
+/* 书籍悬浮 */
+.book-card:hover .book-cover {
+    animation: bookFloat 2s ease infinite;
+}
+
+/* 计时器紧急 */
+.timer-urgent .timer-fill {
+    animation: timerUrgent 0.5s ease infinite;
+}
+
+/* 加载进度条 */
+.loading-progress.animate {
+    animation: loadingBar 2s ease forwards;
+}
+
+/* 星星评分 */
+.star.animate {
+    animation: starTwinkle 1s ease infinite;
+}
+
+/* 每日签到火焰 */
+.streak-number.animate {
+    animation: streakFire 2s ease infinite;
+}
+
+/* ==========================================
+   过渡效果
+   ========================================== */
+
+/* 屏幕切换 */
+.screen-transition-enter {
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+.screen-transition-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.3s ease;
+}
+
+.screen-transition-exit {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.screen-transition-exit-active {
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.3s ease;
+}
+
+/* 答案选项动画入场 */
+.answer-btn {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.answer-btn.show {
+    animation: slideUp 0.3s ease forwards;
+}
+
+.answer-btn:nth-child(1).show { animation-delay: 0.05s; }
+.answer-btn:nth-child(2).show { animation-delay: 0.1s; }
+.answer-btn:nth-child(3).show { animation-delay: 0.15s; }
+.answer-btn:nth-child(4).show { animation-delay: 0.2s; }
+
+/* 关卡节点动画 */
+.level-node {
+    opacity: 0;
+}
+
+.level-node.show {
+    animation: slideUp 0.4s ease forwards;
+}
+
+.level-node:nth-child(1).show { animation-delay: 0.1s; }
+.level-node:nth-child(2).show { animation-delay: 0.2s; }
+.level-node:nth-child(3).show { animation-delay: 0.3s; }
+.level-node:nth-child(4).show { animation-delay: 0.4s; }
+.level-node:nth-child(5).show { animation-delay: 0.5s; }
+.level-node:nth-child(6).show { animation-delay: 0.6s; }
+.level-node:nth-child(7).show { animation-delay: 0.7s; }
+.level-node:nth-child(8).show { animation-delay: 0.8s; }
+.level-node:nth-child(9).show { animation-delay: 0.9s; }
+.level-node:nth-child(10).show { animation-delay: 1s; }
+
+/* 成就卡片动画 */
+.achievement-card {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+.achievement-card.show {
+    animation: slideUp 0.3s ease forwards;
+}
+
+/* 奖励物品动画 */
+.reward-item {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.reward-item.show {
+    animation: slideUp 0.4s ease forwards;
+}
+
+.reward-item:nth-child(1).show { animation-delay: 0.1s; }
+.reward-item:nth-child(2).show { animation-delay: 0.2s; }
+.reward-item:nth-child(3).show { animation-delay: 0.3s; }
+
+/* ==========================================
+   粒子效果背景
+   ========================================== */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: particleFloat 15s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+    0%, 100% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.3;
+    }
+    90% {
+        opacity: 0.3;
+    }
+    100% {
+        transform: translateY(-100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
