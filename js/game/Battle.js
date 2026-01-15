@@ -97,40 +97,57 @@ class Battle {
      * 处理玩家答题
      */
     handleAnswer(selectedIndex) {
-        this.stopTimer();
+        try {
+            this.stopTimer();
 
-        const question = this.currentQuestion;
-        const isCorrect = selectedIndex === question.correctIndex;
-
-        // 记录答题
-        this.player.recordAnswer(isCorrect);
-
-        if (isCorrect) {
-            this.handleCorrectAnswer();
-        } else {
-            this.handleWrongAnswer();
-        }
-
-        // 检查战斗是否结束
-        if (!this.checkBattleEnd()) {
-            // 继续下一题
-            this.currentQuestionIndex++;
-            if (this.currentQuestionIndex < this.questions.length) {
-                setTimeout(() => {
-                    this.showQuestion();
-                    this.startTimer();
-                }, 1500);
-            } else {
-                // 问题用完，玩家胜利
+            const question = this.currentQuestion;
+            if (!question) {
+                console.error('No question available');
                 this.endBattle(true);
+                return { isCorrect: false, correctIndex: 0, explanation: '' };
             }
-        }
 
-        return {
-            isCorrect,
-            correctIndex: question.correctIndex,
-            explanation: question.explanation
-        };
+            const isCorrect = selectedIndex === question.correctIndex;
+
+            // 记录答题
+            this.player.recordAnswer(isCorrect);
+
+            if (isCorrect) {
+                this.handleCorrectAnswer();
+            } else {
+                this.handleWrongAnswer();
+            }
+
+            // 检查战斗是否结束
+            const battleEnded = this.checkBattleEnd();
+
+            if (!battleEnded) {
+                // 继续下一题
+                this.currentQuestionIndex++;
+                if (this.currentQuestionIndex < this.questions.length) {
+                    const self = this;
+                    setTimeout(function() {
+                        if (!self.isFinished) {
+                            self.showQuestion();
+                            self.startTimer();
+                        }
+                    }, 1500);
+                } else {
+                    // 问题用完，玩家胜利
+                    this.endBattle(true);
+                }
+            }
+
+            return {
+                isCorrect,
+                correctIndex: question.correctIndex,
+                explanation: question.explanation
+            };
+        } catch (error) {
+            console.error('Error in handleAnswer:', error);
+            this.endBattle(true);
+            return { isCorrect: false, correctIndex: 0, explanation: '' };
+        }
     }
 
     /**

@@ -627,11 +627,17 @@ class GameEngine {
      * 处理战斗结束
      */
     handleBattleEnd(result, rewards) {
-        setTimeout(() => {
-            if (result === 'victory') {
-                this.showVictory(rewards);
-            } else {
-                this.showDefeat();
+        const self = this;
+        setTimeout(function() {
+            try {
+                if (result === 'victory') {
+                    self.showVictory(rewards);
+                } else {
+                    self.showDefeat();
+                }
+            } catch (error) {
+                console.error('Error in handleBattleEnd:', error);
+                self.showScreen('levelSelect');
             }
         }, 1000);
     }
